@@ -6,6 +6,7 @@ public class PrivateTemplateDeploymentProcessor(ITemplatesContext context, INuge
         var list = await context.GetTemplatesAsync();
         foreach (var template in list)
         {
+            Console.WriteLine($"Adding new template {template.PackageName}");
             await ProcessTemplateAsync(template);
         }
     }
