@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommonBasicLibraries" Version="9.0.78" />
-    <PackageReference Include="Musictopia.UpdateManager.CoreLibrary" Version="9.0.70" />
+    <PackageReference Include="Musictopia.UpdateManager.CoreLibrary" Version="9.0.73" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

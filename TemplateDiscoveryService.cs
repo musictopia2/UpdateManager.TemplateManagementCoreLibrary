@@ -1,11 +1,8 @@
 ﻿namespace UpdateManager.TemplateManagementCoreLibrary;
 public class TemplateDiscoveryService(ITemplatesContext context, ITemplateDiscoveryHandler handler)
 {
-    
-    //no need to do any changes to the c# files
     public async Task DiscoverMissingTemplatesAsync()
     {
-        //BasicList<NuGetTemplateModel> output = [];
         BasicList<NuGetTemplateModel> exixistingTemplates = await context.GetTemplatesAsync();
         var existingTemplatesNames = new HashSet<string>(exixistingTemplates.Select(p => p.PackageName));
         BasicList<string> folders = await handler.GetTemplateDirectoriesAsync();
@@ -17,42 +14,23 @@ public class TemplateDiscoveryService(ITemplatesContext context, ITemplateDiscov
             {
                 continue; //does not exist. continue
             }
-            BasicList<string> toCheck = await ff1.DirectoryListAsync(folder, SearchOption.AllDirectories);
-            toCheck.RemoveAllAndObtain(d =>
+            BasicList<string> directories = await ff1.DirectoryListAsync(folder, SearchOption.TopDirectoryOnly);
+            foreach (var directory in directories)
             {
-                if (d.Contains("Archived", StringComparison.OrdinalIgnoreCase))
+                string packageName = ff1.FileName(directory);
+                if (existingTemplatesNames.Contains(packageName))
                 {
-                    return true;
+                    continue; // Skip this package
                 }
-                return handler.CanIncludeProject(d) == false;
-            });
-            foreach (var dir in toCheck)
-            {
-                var projectFiles = await ff1.GetSeveralSpecificFilesAsync(dir, "csproj");
-                foreach (var projectFile in projectFiles)
+                if (handler.CanIncludeProject(directory) == false)
                 {
-                    if (Path.GetFileName(projectFile).Contains(".backup", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue; // Skip this file
-                    }
-                    string packageName = ff1.FileName(projectFile);
-
-                    // **Skip the extraction if the package already exists**
-                    if (existingTemplatesNames.Contains(packageName))
-                    {
-                        continue; // Skip this package
-                    }
-
-                    if (handler.CanIncludeProject(projectFile) == false)
-                    {
-                        continue;
-                    }
-                    NuGetTemplateModel model = ExtractTemplateInfo(projectFile, packageName, netVersion, prefixName);
-                    //output.Add(model);
+                    continue;
                 }
+                Console.WriteLine($"Adding Tool {packageName}");
+                NuGetTemplateModel model = ExtractTemplateInfo(directory, packageName, netVersion, prefixName);
+                await context.AddTemplateAsync(model); //needs this too.  before happened later but now must be here.
             }
         }
-        //return output;
     }
     private NuGetTemplateModel ExtractTemplateInfo(string directoryPath, string packageName, string netVersion, string prefixName)
     {

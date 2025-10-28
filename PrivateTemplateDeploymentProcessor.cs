@@ -6,7 +6,6 @@ public class PrivateTemplateDeploymentProcessor(ITemplatesContext context, INuge
         var list = await context.GetTemplatesAsync();
         foreach (var template in list)
         {
-            Console.WriteLine($"Adding new template {template.PackageName}");
             await ProcessTemplateAsync(template);
         }
     }
@@ -105,7 +104,7 @@ public class PrivateTemplateDeploymentProcessor(ITemplatesContext context, INuge
     }
     private bool NeedsUpdate(string directory, DateTime? lastUpdated)
     {
-        if (LastUpdated == null)
+        if (lastUpdated is null)
         {
             return true;
         }
@@ -117,7 +116,7 @@ public class PrivateTemplateDeploymentProcessor(ITemplatesContext context, INuge
         }
         return false;
     }
-    private DateTime LastUpdated(string directory)
+    private static DateTime LastUpdated(string directory)
     {
         var files = Directory.GetFiles(directory, "*", SearchOption.AllDirectories).ToBasicList();
 
@@ -163,12 +162,12 @@ public class PrivateTemplateDeploymentProcessor(ITemplatesContext context, INuge
         {
             throw new CustomBasicException("Failed to publish nuget package to private feed");
         }
-        await NuGetToolManager.InstallToolAsync(template.GetPackageID(), template.Version);
+        await NuGetTemplateManager.InstallTemplateAsync(template.GetPackageID(), template.Version);
     }
     private async Task UpdatePackageVersionAsync(NuGetTemplateModel template)
     {
         string version = template.Version.IncrementMinorVersion();
-        await NuGetToolManager.UninstallToolAsync(template.GetPackageID());
+        await NuGetTemplateManager.UninstallTemplateAsync(template.GetPackageID());
         //await NuGetToolManager.UninstallToolAsync(template.GetPackageID());
         await context.UpdateTemplateVersionAsync(template.PackageName, version);
     }
