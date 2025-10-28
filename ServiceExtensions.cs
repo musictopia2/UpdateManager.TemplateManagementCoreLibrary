@@ -18,8 +18,8 @@ public static class ServiceExtensions
     }
     public static IServiceCollection RegisterPublicTemplateUploadServices(this IServiceCollection services)
     {
-        services.AddSingleton<IToolsContext, FileToolsContext>()
-            .AddSingleton<IUploadedToolsStorage, FileUploadedToolsStorage>()
+        services.AddTransient<ITemplatesContext, FileTemplatesContext>()
+             .AddSingleton<IUploadedToolsStorage, FileUploadedToolsStorage>()
             .AddSingleton<INugetUploader, PublicNugetUploader>()
             .AddSingleton<NuGetPublicTemplateUploadManager>();
         return services;
