@@ -44,7 +44,10 @@ public class PrivateTemplateDeploymentProcessor(ITemplatesContext context, INuge
                 await ff1.DeleteFileAsync(finals); //can delete the solution folder because only single project.
             }
         }
-
+        else
+        {
+            DeleteSubVsFolders(template.Directory, others);
+        }
         if (NeedsUpdate(template.Directory!, template.LastUpdated) == false)
         {
             return; //no need to update.
@@ -55,6 +58,49 @@ public class PrivateTemplateDeploymentProcessor(ITemplatesContext context, INuge
         await CreateAndUploadNuGetPackageAsync(template);
         Console.WriteLine("Record latest update");
         await UpdateCompletedAsync(template);
+    }
+    private static void DeleteSubVsFolders(string directory, BasicList<string> folders)
+    {
+        if (folders.Count == 0)
+        {
+            throw new CustomBasicException("Cannot have empty folder list");
+        }
+
+        if (Directory.Exists(directory) == false)
+        {
+            throw new CustomBasicException($"Directory {directory} does not exist");
+        }
+        try
+        {
+            // Get immediate subdirectories only (not recursive)
+            var subDirs = Directory.GetDirectories(directory);
+
+            foreach (var subDir in subDirs)
+            {
+                foreach (var folderName in folders)
+                {
+                    // Build the full path for the folder to delete
+                    var targetFolder = Path.Combine(subDir, folderName);
+
+                    if (Directory.Exists(targetFolder))
+                    {
+                        try
+                        {
+                            Directory.Delete(targetFolder, true); // true = recursive delete
+                            //Console.WriteLine($"Deleted folder: {targetFolder}");
+                        }
+                        catch
+                        {
+                            throw new CustomBasicException($"Failed to delete {targetFolder}");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new CustomBasicException($"Error processing directory {directory}:  {ex.Message}");
+        }
     }
     private bool NeedsUpdate(string directory, DateTime? lastUpdated)
     {
