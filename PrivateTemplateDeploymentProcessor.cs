@@ -9,7 +9,8 @@ public class PrivateTemplateDeploymentProcessor(ITemplatesContext context, INuge
             await ProcessTemplateAsync(template);
         }
     }
-    private async Task ProcessTemplateAsync(NuGetTemplateModel template)
+    //decided to make it private so year end processes can do this.
+    public async Task ProcessTemplateAsync(NuGetTemplateModel template, bool log = true)
     {
         if (ff1.DirectoryExists(template.Directory!) == false)
         {
@@ -52,11 +53,20 @@ public class PrivateTemplateDeploymentProcessor(ITemplatesContext context, INuge
         {
             return; //no need to update.
         }
-        Console.WriteLine($"Processing Template Updates For {template.PackageName} on {DateTime.Now}");
+        if (log)
+        {
+            Console.WriteLine($"Processing Template Updates For {template.PackageName} on {DateTime.Now}");
+        }
         await UpdatePackageVersionAsync(template);
-        Console.WriteLine("Packging nuget package");
+        if (log)
+        {
+            Console.WriteLine("Packging nuget package");
+        }
         await CreateAndUploadNuGetPackageAsync(template);
-        Console.WriteLine("Record latest update");
+        if (log)
+        {
+            Console.WriteLine("Record latest update");
+        }
         await UpdateCompletedAsync(template);
     }
     private static void DeleteSubVsFolders(string directory, BasicList<string> folders)
