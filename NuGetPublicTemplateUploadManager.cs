@@ -6,7 +6,7 @@ public class NuGetPublicTemplateUploadManager(ITemplatesContext templatesContext
 {
     public async Task UploadTemplatesAsync(CancellationToken cancellationToken = default)
     {
-        string feedUrl = bb1.Configuration!.GetStagingPackagePath();
+        string feedUrl = bb1.Configuration!.StagingPackagePath;
         BasicList<UploadTemplateModel> list = await GetUploadedTemplatesAsync(feedUrl, cancellationToken);
         list = list.ToBasicList(); //try to make a copy here too.
         await UploadTemplatesAsync(list, cancellationToken);
@@ -56,13 +56,13 @@ public class NuGetPublicTemplateUploadManager(ITemplatesContext templatesContext
         foreach (var name in stagingTools)
         {
             //this means needs to add package.
-            var ourPackage = allPackages.SingleOrDefault(x => x.GetPackageID().Equals(name, StringComparison.CurrentCultureIgnoreCase));
+            var ourPackage = allPackages.SingleOrDefault(x => x.PackageID.Equals(name, StringComparison.CurrentCultureIgnoreCase));
             var uploadedPackage = uploadedPackages.SingleOrDefault(x => x.PackageId.Equals(name, StringComparison.CurrentCultureIgnoreCase));
             //i am guessing if you are now temporarily ignoring it, still okay to process because it was the past.
             //same thing for development.
             if (uploadedPackage is null && ourPackage is not null)
             {
-                string packageId = ourPackage.GetPackageID();
+                string packageId = ourPackage.PackageID;
                 uploadedPackage = new()
                 {
                     PackageId = packageId,

@@ -172,20 +172,20 @@ public class PrivateTemplateDeploymentProcessor(ITemplatesContext context, INuge
         {
             throw new CustomBasicException("Failed to publish nuget package to private feed");
         }
-        await NuGetTemplateManager.InstallTemplateAsync(template.GetPackageID(), template.Version);
+        await NuGetTemplateManager.InstallTemplateAsync(template.PackageID, template.Version);
     }
     private async Task UpdatePackageVersionAsync(NuGetTemplateModel template)
     {
         string version = template.Version.IncrementMinorVersion();
-        await NuGetTemplateManager.UninstallTemplateAsync(template.GetPackageID());
+        await NuGetTemplateManager.UninstallTemplateAsync(template.PackageID);
         //await NuGetToolManager.UninstallToolAsync(template.GetPackageID());
         await context.UpdateTemplateVersionAsync(template.PackageName, version);
     }
     private static string GetFeedToUse(NuGetTemplateModel template)
     {
-        string stagingPath = bb1.Configuration!.GetStagingPackagePath();
-        string developmentPath = bb1.Configuration!.GetDevelopmentPackagePath();
-        string localPath = bb1.Configuration!.GetPrivatePackagePath();
+        string stagingPath = bb1.Configuration!.StagingPackagePath;
+        string developmentPath = bb1.Configuration!.DevelopmentPackagePath;
+        string localPath = bb1.Configuration!.PrivatePackagePath;
         if (template.Development)
         {
             return developmentPath;

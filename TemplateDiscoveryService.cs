@@ -6,8 +6,8 @@ public class TemplateDiscoveryService(ITemplatesContext context, ITemplateDiscov
         BasicList<NuGetTemplateModel> exixistingTemplates = await context.GetTemplatesAsync();
         var existingTemplatesNames = new HashSet<string>(exixistingTemplates.Select(p => p.PackageName));
         BasicList<string> folders = await handler.GetTemplateDirectoriesAsync();
-        string netVersion = bb1.Configuration!.GetNetVersion();
-        string prefixName = bb1.Configuration!.GetPackagePrefixFromConfig();
+        string netVersion = bb1.Configuration!.NetVersion;
+        string prefixName = bb1.Configuration!.PackagePrefixFromConfig;
         foreach (var folder in folders)
         {
             if (ff1.DirectoryExists(folder) == false)

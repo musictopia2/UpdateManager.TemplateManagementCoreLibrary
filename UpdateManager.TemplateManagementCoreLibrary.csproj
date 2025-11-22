@@ -8,8 +8,8 @@
     <FeedType>Public</FeedType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CommonBasicLibraries" Version="10.0.1" />
-    <PackageReference Include="Musictopia.UpdateManager.CoreLibrary" Version="10.0.1" />
+    <PackageReference Include="CommonBasicLibraries" Version="10.0.3" />
+    <PackageReference Include="Musictopia.UpdateManager.CoreLibrary" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
