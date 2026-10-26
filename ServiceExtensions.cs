@@ -17,7 +17,6 @@ public static class ServiceExtensions
         {
             services.AddTransient<ITemplatesContext, FileTemplatesContext>()
                  .AddSingleton<IUploadedTemplatesStorage, FileUploadedTemplatesStorage>()
-                .AddSingleton<INugetUploader, PublicNugetUploader>()
                 .AddSingleton<NuGetPublicTemplateUploadManager>();
             return services;
         }
