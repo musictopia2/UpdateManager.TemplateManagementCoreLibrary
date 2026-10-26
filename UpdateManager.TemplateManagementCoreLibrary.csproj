@@ -8,8 +8,8 @@
     <RunPostBuildAppCondition Condition="'$(Configuration)' == 'Release'">true</RunPostBuildAppCondition>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Musictopia2.CommonBasicLibraries" Version="10.0.1" />
-    <PackageReference Include="Musictopia2.UpdateManager.CoreLibrary" Version="10.0.1" />
+    <PackageReference Include="Musictopia2.CommonBasicLibraries" Version="10.0.2" />
+    <PackageReference Include="Musictopia2.UpdateManager.CoreLibrary" Version="10.0.29" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

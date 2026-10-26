@@ -12,17 +12,26 @@ public class NuGetPublicTemplateUploadManager(ITemplatesContext templatesContext
         await UploadTemplatesAsync(list, cancellationToken);
         await CheckTemplatesAsync(list, feedUrl);
     }
-    public async Task<bool> HasItemsToProcessAsync()
+    public async Task<bool> HasItemsToProcessAsync(
+        CancellationToken cancellationToken = default)
     {
-        var list = await uploadContext.GetAllUploadedTemplatesAsync();
-        return list.Count > 0;
+        string feedUrl = bb1.Configuration!.StagingPackagePath;
+
+        var stagingTemplates =
+            await LocalNuGetFeedManager.GetAllPackagesAsync(
+                feedUrl, cancellationToken);
+
+        var trackedTemplates =
+            await uploadContext.GetAllUploadedTemplatesAsync();
+
+        return stagingTemplates.Any() || trackedTemplates.Count > 0;
     }
     private async Task UploadTemplatesAsync(BasicList<UploadTemplateModel> tools, CancellationToken cancellationToken)
     {
         await tools.ForConditionalItemsAsync(x => x.Uploaded == false, async item =>
         {
             bool rets;
-            rets = await uploader.UploadNugetPackageAsync(item.NugetFilePath, cancellationToken);
+            rets = await uploader.UploadNugetPackageAsync(item.NugetFilePath, item.PackageId, item.Version, cancellationToken);
             if (rets)
             {
                 item.Uploaded = true;
